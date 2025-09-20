@@ -10,6 +10,17 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { Controller } from "react-hook-form";
+import { DatePicker } from "@/components/date-picker";
+
+type FormValues = {
+  fullName: string;
+  email: string;
+  phone?: string;
+  birthday?: Date | string;
+  password: string;
+  confirmPassword: string;
+};
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,6 +31,7 @@ export default function RegisterForm() {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors, isSubmitting },
     setError,
   } = useForm<FormValues>({
@@ -27,7 +39,7 @@ export default function RegisterForm() {
       fullName: "",
       email: "",
       phone: "",
-      birthday: "",
+      birthday: undefined,
       password: "",
       confirmPassword: "",
     },
@@ -42,7 +54,9 @@ export default function RegisterForm() {
         email: values.email,
         phone: values.phone || undefined,
         birthday: values.birthday
-          ? new Date(values.birthday).toISOString()
+          ? values.birthday instanceof Date
+            ? values.birthday.toISOString()
+            : new Date(values.birthday).toISOString()
           : null,
         password: values.password,
       };
@@ -68,14 +82,14 @@ export default function RegisterForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="fullName" className="text-base">
+        <Label htmlFor="fullName" className="">
           Full Name
         </Label>
         <Input
           id="fullName"
           type="text"
           placeholder="Enter your full name"
-          className="h-10 md:text-base"
+          className=""
           {...register("fullName", {
             required: "Full name is required",
           })}
@@ -86,14 +100,14 @@ export default function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email" className="text-base">
+        <Label htmlFor="email" className="">
           Email
         </Label>
         <Input
           id="email"
           type="email"
           placeholder="Enter your email"
-          className="h-10 md:text-base"
+          className=""
           {...register("email", {
             required: "Email is required",
             pattern: {
@@ -108,32 +122,41 @@ export default function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="phone" className="text-base">
+        <Label htmlFor="phone" className="">
           Phone Number (Optional)
         </Label>
         <Input
           id="phone"
           type="tel"
           placeholder="Enter your phone number"
-          className="h-10 md:text-base"
+          className=""
           {...register("phone")}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="birthday" className="text-base">
-          Birthday (Optional)
-        </Label>
-        <Input
-          id="birthday"
-          type="date"
-          className="h-10 md:text-base"
-          {...register("birthday")}
+        <Controller
+          control={control}
+          name="birthday"
+          render={({ field: { value, onChange } }) => (
+            <DatePicker
+              id="birthday"
+              label="Birthday (Optional)"
+              value={
+                value instanceof Date
+                  ? value
+                  : value
+                  ? new Date(value)
+                  : undefined
+              }
+              onChange={(d) => onChange(d)}
+            />
+          )}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password" className="text-base">
+        <Label htmlFor="password" className="">
           Password
         </Label>
         <div className="relative">
@@ -141,7 +164,7 @@ export default function RegisterForm() {
             id="password"
             type={showPassword ? "text" : "password"}
             placeholder="Create a password"
-            className="h-10 md:text-base"
+            className=""
             {...register("password", {
               required: "Password is required",
               minLength: { value: 6, message: "At least 6 characters" },
@@ -177,7 +200,7 @@ export default function RegisterForm() {
             id="confirmPassword"
             type={showConfirmPassword ? "text" : "password"}
             placeholder="Confirm your password"
-            className="h-10 md:text-base"
+            className="text-base"
             {...register("confirmPassword", {
               required: "Confirm your password",
               validate: (val) =>
@@ -218,18 +241,7 @@ export default function RegisterForm() {
       </Button>
 
       <div className="mt-1">
-        <p className="text-sm text-muted-foreground">
-          By creating an account, you agree to our{" "}
-          <Link href="/terms" className="underline hover:text-primary">
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link href="/privacy" className="underline hover:text-primary">
-            Privacy Policy
-          </Link>
-          .
-        </p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-center text-muted-foreground">
           Already have an account?{" "}
           <Link href="/auth/login" className="underline hover:text-primary">
             Sign In

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "./theme-providers";
+import { SessionProvider } from "next-auth/react";
 
 const queryClient = new QueryClient();
 
@@ -15,14 +16,16 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <QueryClientProvider client={queryClient}>
-        {children}
-        <ToastContainer
-          draggable={false}
-          position="bottom-right"
-          autoClose={3000}
-        />
-      </QueryClientProvider>
+      <SessionProvider>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <ToastContainer
+            draggable={false}
+            position="bottom-right"
+            autoClose={3000}
+          />
+        </QueryClientProvider>
+      </SessionProvider>
     </ThemeProvider>
   );
 }
