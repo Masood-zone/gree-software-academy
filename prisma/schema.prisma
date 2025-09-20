@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(cuid())
+  fullName    String
+  email       String       @unique
+  phone       String?
+  birthday    DateTime?
+  password    String?
+  role        UserRole     @default(STUDENT)
+  avatar      String?
+  sessions    Session[]
+  accounts    Account[]
+  enrollments Enrollment[]
+  wallet      Wallet?
+  transactions Transaction[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+enum UserRole {
+  STUDENT
+  ADMIN
+}
+
+model Course {
+  id            String       @id @default(cuid())
+  title         String
+  slug          String       @unique
+  description   String       @db.Text
+  shortDescription String?
+  image         String?
+  price         Int          // Price in cents
+  isActive      Boolean      @default(true)
+  curriculum    Json?
+  sections      Section[]
+  enrollments   Enrollment[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@map("courses")
+}
+
+model Section {
+  id        String   @id @default(cuid())
+  title     String
+  order     Int
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+  lessons   Lesson[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sections")
+}
+
+model Lesson {
+  id          String         @id @default(cuid())
+  title       String
+  content     String?        @db.Text
+  videoUrl    String?
+  duration    Int?           // Duration in minutes
+  order       Int
+  section     Section        @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  sectionId   String
+  progress    LessonProgress[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("lessons")
+}
+
+model LessonProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId    String
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@map("lesson_progress")
+}
+
+model Enrollment {
+  id                String       @id @default(cuid())
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+  course            Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId          String
+  enrollmentPrice   Int          // Price paid for enrollment in cents
+  depositRequired   Int          // Required deposit in cents
+  depositPaid       Int          @default(0) // Amount paid as deposit in cents
+  status            EnrollmentStatus @default(PENDING)
+  startedAt         DateTime?
+  completedAt       DateTime?
+  installments      Installment[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+enum EnrollmentStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  SUSPENDED
+}
+
+model Installment {
+  id             String     @id @default(cuid())
+  enrollment     Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  enrollmentId   String
+  amount         Int        // Amount in cents
+  dueDate        DateTime
+  paidAmount     Int        @default(0) // Amount paid in cents
+  paidAt         DateTime?
+  status         InstallmentStatus @default(DUE)
+  transaction    Transaction? @relation(fields: [transactionId], references: [id])
+  transactionId  String?      @unique
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@map("installments")
+}
+
+enum InstallmentStatus {
+  DUE
+  PAID
+  LATE
+  CANCELLED
+}
+
+model Wallet {
+  id           String        @id @default(cuid())
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String        @unique
+  balance      Int           @default(0) // Balance in cents
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("wallets")
+}
+
+model Transaction {
+  id           String          @id @default(cuid())
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  wallet       Wallet?         @relation(fields: [walletId], references: [id])
+  walletId     String?
+  installment  Installment?
+  amount       Int             // Amount in cents
+  type         TransactionType
+  reference    String          @unique
+  provider     String?         // Payment provider (Paystack, etc.)
+  status       TransactionStatus @default(PENDING)
+  metadata     Json?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@map("transactions")
+}
+
+enum TransactionType {
+  DEPOSIT
+  PAYMENT
+  REFUND
+  WITHDRAWAL
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
