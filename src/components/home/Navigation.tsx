@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Package, Settings } from "lucide-react";
+import { LogOut, Package, Settings, Menu } from "lucide-react";
 import { ModeToggle } from "../theme-toggle";
 
 export function Navigation() {
@@ -40,6 +40,7 @@ export function Navigation() {
               </span>
             </div>
           </Link>
+          {/* Desktop nav links */}
           <div className="hidden md:flex items-center space-x-8">
             <Link
               href="/courses"
@@ -74,7 +75,7 @@ export function Navigation() {
                         <AvatarFallback>
                           {session.user.name?.charAt(0) ||
                             session.user.email?.charAt(0) ||
-                            "U"}
+                            "USR"}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex items-start justify-start gap-2">
@@ -105,7 +106,7 @@ export function Navigation() {
                     {user.role === "STUDENT" && (
                       <>
                         <DropdownMenuItem asChild>
-                          <Link href="/vendor">
+                          <Link href="/dashboard">
                             <Package className="mr-2 h-4 w-4" />
                             Dashboard
                           </Link>
@@ -125,20 +126,101 @@ export function Navigation() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <div>
+                {/* Theme toggle (desktop only) */}
+                <div className="hidden md:block">
                   <ModeToggle />
                 </div>
               </>
             ) : (
               <>
-                <Link href="/auth/login">
-                  <Button variant="ghost">Login</Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button>Get Started</Button>
-                </Link>
+                {/* Hide inline auth buttons on mobile; shown on desktop */}
+                <div className="hidden md:flex items-center space-x-4">
+                  <Link href="/auth/login">
+                    <Button variant="ghost">Login</Button>
+                  </Link>
+                  <Link href="/auth/register">
+                    <Button>Get Started</Button>
+                  </Link>
+                </div>
               </>
             )}
+
+            {/* Mobile theme toggle */}
+            <div className="md:hidden">
+              <ModeToggle />
+            </div>
+
+            {/* Mobile menu (hamburger) */}
+            <div className="md:hidden">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Open menu"
+                    className="rounded"
+                  >
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56" forceMount>
+                  <DropdownMenuItem asChild>
+                    <Link href="/courses">Courses</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/about">About</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/contact">Contact</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {user ? (
+                    <>
+                      {user.role === "ADMIN" && (
+                        <DropdownMenuItem asChild>
+                          <Link href="/admin">
+                            <Settings className="mr-2 h-4 w-4" /> Admin
+                            Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
+                      {user.role === "STUDENT" && (
+                        <>
+                          <DropdownMenuItem asChild>
+                            <Link href="/dashboard">
+                              <Package className="mr-2 h-4 w-4" /> Dashboard
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/dashboard/profile">
+                              <Package className="mr-2 h-4 w-4" /> Profile
+                            </Link>
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                      <DropdownMenuItem onClick={handleSignOut}>
+                        <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/auth/login">Login</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/auth/register">Get Started</Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuSeparator />
+                  <div className="px-2 py-1.5 flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Theme</span>
+                    <ModeToggle />
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 type LoginValues = {
   email: string;
@@ -51,7 +52,10 @@ export function LoginForm({
       const session = await getSession();
       const role = session?.user?.role;
       if (role === "ADMIN") router.push("/admin/dashboard");
-      else router.push("/");
+      else {
+        toast.success("Login successful!");
+        router.push("/");
+      }
     } catch (err: unknown) {
       const msg =
         typeof err === "object" && err && "message" in err
