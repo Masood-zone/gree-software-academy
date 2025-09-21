@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { LogOut, Package, Settings, Menu } from "lucide-react";
+import { LogOut, Settings, Menu, User2Icon, GraduationCap } from "lucide-react";
 import { ModeToggle } from "../theme-toggle";
 
 type UserType = {
@@ -73,12 +73,12 @@ export function MobileMenu({
                   {/* Links */}
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard">
-                      <Package className="mr-2 h-4 w-4" /> Dashboard
+                      <GraduationCap className="mr-2 h-4 w-4" /> Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard/profile">
-                      <Package className="mr-2 h-4 w-4" /> Profile
+                      <User2Icon className="mr-2 h-4 w-4" /> Profile
                     </Link>
                   </DropdownMenuItem>
                 </>
