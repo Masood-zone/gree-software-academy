@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn, getSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
@@ -49,13 +49,8 @@ export function LoginForm({
         return;
       }
 
-      const session = await getSession();
-      const role = session?.user?.role;
-      if (role === "ADMIN") router.push("/admin/dashboard");
-      else {
-        toast.success("Login successful!");
-        router.push("/");
-      }
+      toast.success("Login successful!");
+      router.push("/");
     } catch (err: unknown) {
       const msg =
         typeof err === "object" && err && "message" in err

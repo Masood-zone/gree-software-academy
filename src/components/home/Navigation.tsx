@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import Link from "next/link";
-import { GraduationCap, LogOut, User2Icon } from "lucide-react";
+import { GraduationCap, LogOut, Settings, User2Icon } from "lucide-react";
 import { Button } from "../ui/button";
 
 export function Navigation() {
@@ -34,34 +34,39 @@ export function Navigation() {
             {user ? (
               <>
                 <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant="ghost" className="hidden gap-2 md:flex">
-                      {/* Avatar dropdown for authenticated users */}
-                      <div className="hidden md:block">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={session.user.image || ""}
-                            alt={session.user.name || ""}
-                          />
-                          <AvatarFallback>
-                            {session.user.name?.charAt(0) ||
-                              session.user.email?.charAt(0) ||
-                              "USR"}
-                          </AvatarFallback>
-                        </Avatar>
-                      </div>
-                      {/* User Information */}
-                      <div className="hidden md:block">
-                        <p className="text-sm text-left font-medium">
-                          {session.user.name}
-                        </p>
-                        <p className="text-sm text-left text-muted-foreground">
-                          {session.user.email}
-                        </p>
-                      </div>
-                    </Button>
+                  <DropdownMenuTrigger className="focus:outline-none cursor-pointer">
+                    {/* Avatar dropdown for authenticated users */}
+                    <div className="hidden md:block">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={session.user.image || ""}
+                          alt={session.user.name || ""}
+                        />
+                        <AvatarFallback>
+                          {session.user.name?.charAt(0) ||
+                            session.user.email?.charAt(0) ||
+                            "USR"}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    {/* User Information */}
+                    <div className="hidden md:block">
+                      <p className="text-sm text-left font-medium">
+                        {session.user.name}
+                      </p>
+                      <p className="text-sm text-left text-muted-foreground">
+                        {session.user.email}
+                      </p>
+                    </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
+                    {user.role === "ADMIN" && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin">
+                          <Settings className="mr-2 h-4 w-4" /> Admin Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     {user.role === "STUDENT" && (
                       <>
                         {/* Links */}
