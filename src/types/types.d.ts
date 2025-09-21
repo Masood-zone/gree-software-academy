@@ -28,3 +28,20 @@ type FormValues = {
   password: string;
   confirmPassword: string;
 };
+
+type ForgotPasswordInput = {
+  email: string;
+};
+type ForgotPasswordResponse = {
+  message: string;
+};
+
+type VerifyOtpInput = {
+  token: string;
+  otp: string;
+};
+type VerifyOtpResponse = {
+  success: boolean;
+  message?: string;
+  redirect?: string;
+};

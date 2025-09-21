@@ -21,3 +21,35 @@ export const useLoginMutation = () =>
       return response.data;
     },
   });
+
+export const useForgotoPasswordMutation = () =>
+  useMutation<ForgotPasswordResponse, Error, ForgotPasswordInput>({
+    mutationKey: ["auth", "forgot-password"],
+    mutationFn: async (payload) => {
+      const response = await api.post<ForgotPasswordResponse>(
+        "/auth/forgot-password",
+        payload
+      );
+      return response.data;
+    },
+  });
+
+export const useVerifyOtpMutation = () =>
+  useMutation<VerifyOtpResponse, Error, VerifyOtpInput>({
+    mutationKey: ["auth", "verify-otp"],
+    mutationFn: async (payload) => {
+      const response = await api.post<VerifyOtpResponse>(
+        "/auth/verify-otp",
+        payload
+      );
+      return response.data;
+    },
+  });
+
+export const useResetPasswordMutation = () =>
+  useMutation<void, Error, { token: string; newPassword: string }>({
+    mutationKey: ["auth", "reset-password"],
+    mutationFn: async (payload) => {
+      await api.post("/auth/reset-password", payload);
+    },
+  });
