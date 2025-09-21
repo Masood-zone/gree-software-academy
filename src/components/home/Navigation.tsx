@@ -14,7 +14,6 @@ import {
 } from "../ui/dropdown-menu";
 import Link from "next/link";
 import { GraduationCap, LogOut, Settings, User2Icon } from "lucide-react";
-import { Button } from "../ui/button";
 
 export function Navigation() {
   const { data: session } = useSession();
@@ -34,7 +33,7 @@ export function Navigation() {
             {user ? (
               <>
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="focus:outline-none cursor-pointer">
+                  <DropdownMenuTrigger className="focus:outline-none cursor-pointer flex items-center space-x-2 justify-start">
                     {/* Avatar dropdown for authenticated users */}
                     <div className="hidden md:block">
                       <Avatar className="h-8 w-8">
