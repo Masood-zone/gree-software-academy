@@ -1,3 +1,11 @@
+type UserType = {
+  id?: string;
+  name?: string;
+  email?: string;
+  image?: string;
+  role?: string;
+};
+
 type LoginInput = {
   email: string;
   password: string;
@@ -44,4 +52,12 @@ type VerifyOtpResponse = {
   success: boolean;
   message?: string;
   redirect?: string;
+};
+
+type AdminLink = {
+  name: string;
+  href: string;
+  icon: React.ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
+  >;
 };

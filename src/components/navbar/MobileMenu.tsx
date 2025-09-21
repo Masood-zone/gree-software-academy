@@ -10,14 +10,6 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Settings, Menu, User2Icon, GraduationCap } from "lucide-react";
 import { ModeToggle } from "../theme-toggle";
 
-type UserType = {
-  id?: string;
-  name?: string;
-  email?: string;
-  image?: string;
-  role?: string;
-};
-
 export function MobileMenu({
   user,
   handleSignOut,
