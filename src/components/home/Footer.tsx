@@ -11,7 +11,7 @@ export function Footer() {
               <Image
                 src="/images/logo.png"
                 alt="Gree Software Academy Logo"
-                className="h-6 w-6"
+                className="h-6 w-6 rounded-full"
                 width={24}
                 height={24}
               />
@@ -47,22 +47,17 @@ export function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/careers" className="hover:text-foreground">
                   Careers
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold mb-4">Support</h3>
             <ul className="space-y-2 text-muted-foreground">
-              <li>
-                <Link href="/help" className="hover:text-foreground">
-                  Help Center
-                </Link>
-              </li>
               <li>
                 <Link href="/privacy" className="hover:text-foreground">
                   Privacy Policy
