@@ -23,7 +23,7 @@ export const OtpStyledInput = ({
       renderInput={(inputProps) => (
         <Input
           {...inputProps}
-          className={cn("selection:bg-none !w-10", className)}
+          className={cn("selection:bg-none !w-12", className)}
         />
       )}
       containerStyle={`flex justify-center items-center flex-wrap ${

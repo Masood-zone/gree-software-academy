@@ -102,10 +102,14 @@ export default function ForgotPasswordForm() {
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Send Reset Link
           </Button>
+        </div>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Didn&apos;t receive the email otp?{" "}
+          </p>
           <Button
             type="button"
             variant="link"
-            className="w-full mt-2"
             disabled={timer > 0}
             onClick={handleSubmit(onSubmit)}
           >

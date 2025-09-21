@@ -26,11 +26,11 @@ export const OtpInput: React.FC<OtpInputProps> = ({ onSubmit, loading }) => {
   });
 
   return (
-    <div className="max-w-xs h-fit flex items-center justify-center outline outline-muted rounded-md p-4 bg-background">
+    <div className="max-w-md h-fit flex items-center justify-center outline outline-muted rounded-md p-4 bg-background">
       <div className="w-full space-y-2">
         <div className="space-y-1">
           <h2 className="font-semibold">OTP verification</h2>
-          <p className="text-xs">
+          <p className="text-base">
             Enter the 5-digit code sent to your email address or phone number
           </p>
         </div>
@@ -44,7 +44,7 @@ export const OtpInput: React.FC<OtpInputProps> = ({ onSubmit, loading }) => {
                   <>
                     <FormItem>
                       <OtpStyledInput
-                        numInputs={5}
+                        numInputs={6}
                         inputType="number"
                         {...field}
                       />
