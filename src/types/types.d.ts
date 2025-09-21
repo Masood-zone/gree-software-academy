@@ -61,3 +61,10 @@ type AdminLink = {
     Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
   >;
 };
+
+type DashboardStatsResponse = {
+  totalUsers: number;
+  totalCourses: number;
+  totalEnrollments: number;
+  totalRevenue: number;
+};
