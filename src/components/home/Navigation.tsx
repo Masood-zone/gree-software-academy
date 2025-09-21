@@ -6,6 +6,15 @@ import { AuthActions } from "../navbar/AuthActions";
 import { MobileMenu } from "../navbar/MobileMenu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "../theme-toggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import Link from "next/link";
+import { GraduationCap, LogOut, User2Icon } from "lucide-react";
+import { Button } from "../ui/button";
 
 export function Navigation() {
   const { data: session } = useSession();
@@ -16,7 +25,7 @@ export function Navigation() {
   };
 
   return (
-    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Brand />
@@ -24,27 +33,56 @@ export function Navigation() {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                {/* Avatar dropdown for authenticated users */}
-                <div className="hidden md:block">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={session.user.image || ""}
-                      alt={session.user.name || ""}
-                    />
-                    <AvatarFallback>
-                      {session.user.name?.charAt(0) ||
-                        session.user.email?.charAt(0) ||
-                        "USR"}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-                {/* User Information */}
-                <div className="hidden md:block">
-                  <p className="text-sm font-medium">{session.user.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {session.user.email}
-                  </p>
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button variant="ghost" className="hidden gap-2 md:flex">
+                      {/* Avatar dropdown for authenticated users */}
+                      <div className="hidden md:block">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={session.user.image || ""}
+                            alt={session.user.name || ""}
+                          />
+                          <AvatarFallback>
+                            {session.user.name?.charAt(0) ||
+                              session.user.email?.charAt(0) ||
+                              "USR"}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
+                      {/* User Information */}
+                      <div className="hidden md:block">
+                        <p className="text-sm text-left font-medium">
+                          {session.user.name}
+                        </p>
+                        <p className="text-sm text-left text-muted-foreground">
+                          {session.user.email}
+                        </p>
+                      </div>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {user.role === "STUDENT" && (
+                      <>
+                        {/* Links */}
+                        <DropdownMenuItem asChild>
+                          <Link href="/dashboard">
+                            <GraduationCap className="mr-2 h-4 w-4" /> Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/dashboard/profile">
+                            <User2Icon className="mr-2 h-4 w-4" /> Profile
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 {/* Theme toggle (desktop only) */}
                 <div className="hidden md:block">
                   <ModeToggle />
