@@ -1,12 +1,6 @@
 import React from "react";
-import AnalyticCard from "./analytic-card";
-import {
-  Users,
-  GraduationCap,
-  BookOpenCheck,
-  DollarSign,
-  BadgeCent,
-} from "lucide-react";
+import AnalyticCard from "../../common/AnalyticCard";
+import { Users, GraduationCap, BookOpenCheck, BadgeCent } from "lucide-react";
 
 interface AnalyticsListProps {
   stats: {

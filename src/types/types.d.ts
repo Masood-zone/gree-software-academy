@@ -62,7 +62,12 @@ type Link = {
   >;
 };
 
-type DashboardStatsResponse = {
+type UserDashboardStatsResponse = {
+  totalCourses: number;
+  saveToLearnWallet: number;
+};
+
+type AdminDashboardStatsResponse = {
   totalUsers: number;
   totalCourses: number;
   totalEnrollments: number;

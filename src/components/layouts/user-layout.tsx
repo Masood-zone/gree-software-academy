@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode } from "react";
 import { useMenuToggleStore } from "@/store/menu-toggle-store";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -12,19 +12,19 @@ import {
 } from "lucide-react";
 import Sidebar from "../common/Sidebar";
 import UserNavbar from "../user/user-navbar";
+import { toast } from "react-toastify";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
-  const router = useRouter();
-  const { data: session } = useSession();
-  const user = session?.user;
-
-  useEffect(() => {
-    if (user?.role !== "STUDENT") {
-      router.push("/");
-    }
-  }, [user, router]);
-
   const isOpen = useMenuToggleStore((state) => state.isOpen);
+  const session = useSession();
+  const router = useRouter();
+
+  if (session.status === "unauthenticated") {
+    // Redirect to login if not authenticated
+    router.push("/auth/signin");
+    toast.error("You must be logged in to access the user dashboard.");
+    return null;
+  }
 
   const userLinks: Link[] = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },

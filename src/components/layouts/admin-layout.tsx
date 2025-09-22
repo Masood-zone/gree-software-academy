@@ -12,23 +12,23 @@ import {
   Users,
 } from "lucide-react";
 import Sidebar from "../common/Sidebar";
+import { toast } from "react-toastify";
 
 export default function AdminLayoutClient({
   children,
 }: {
   children: ReactNode;
 }) {
-  const router = useRouter();
-  const { data: session } = useSession();
-  const user = session?.user;
-
-  useEffect(() => {
-    if (user?.role !== "ADMIN") {
-      router.push("/");
-    }
-  }, [user, router]);
-
   const isOpen = useMenuToggleStore((state) => state.isOpen);
+
+  const session = useSession();
+  const router = useRouter();
+  if (session.status === "unauthenticated") {
+    // Redirect to login if not authenticated
+    router.push("/auth/login");
+    toast.error("You must be logged in to access the admin dashboard.");
+    return null;
+  }
 
   const adminLinks: Link[] = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
