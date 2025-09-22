@@ -54,7 +54,7 @@ type VerifyOtpResponse = {
   redirect?: string;
 };
 
-type AdminLink = {
+type Link = {
   name: string;
   href: string;
   icon: React.ForwardRefExoticComponent<

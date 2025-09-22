@@ -1,15 +1,43 @@
 "use client";
-import React, { ReactNode } from "react";
-import AdminSidebar from "@/components/admin/admin-sidebar";
+import React, { ReactNode, useEffect } from "react";
 import AdminNavbar from "@/components/admin/admin-navbar";
 import { useMenuToggleStore } from "@/store/menu-toggle-store";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import {
+  BookOpenCheck,
+  GraduationCap,
+  LayoutDashboard,
+  Settings,
+  Users,
+} from "lucide-react";
+import Sidebar from "../common/Sidebar";
 
 export default function AdminLayoutClient({
   children,
 }: {
   children: ReactNode;
 }) {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const user = session?.user;
+
+  useEffect(() => {
+    if (user?.role !== "ADMIN") {
+      router.push("/");
+    }
+  }, [user, router]);
+
   const isOpen = useMenuToggleStore((state) => state.isOpen);
+
+  const adminLinks: Link[] = [
+    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "Courses", href: "/admin/courses", icon: GraduationCap },
+    { name: "Users", href: "/admin/users", icon: Users },
+    { name: "Enrollments", href: "/admin/enrollments", icon: BookOpenCheck },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
+  ];
+
   return (
     <main
       className={`min-h-screen grid transition-all duration-300 ${
@@ -22,7 +50,9 @@ export default function AdminLayoutClient({
           isOpen ? "w-[240px]" : "w-0"
         }`}
       >
-        {isOpen && <AdminSidebar />}
+        {isOpen && (
+          <Sidebar links={adminLinks} title="Admin" subtitle="Dashboard" />
+        )}
       </aside>
       {/* Dashboard content goes here */}
       <div className="flex flex-1 flex-col h-full">
