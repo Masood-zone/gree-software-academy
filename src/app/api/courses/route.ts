@@ -45,3 +45,85 @@ export async function GET() {
     );
   }
 }
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const {
+      title,
+      slug,
+      shortDescription,
+      description,
+      price,
+      image,
+      isActive,
+      curriculum,
+      settings,
+    } = body;
+
+    const created = await prisma.course.create({
+      data: {
+        title,
+        slug,
+        shortDescription,
+        description,
+        price: price ?? 0,
+        image,
+        isActive: isActive ?? true,
+        curriculum: curriculum ?? null,
+      },
+    });
+
+    // Optionally create settings or related models here
+
+    return NextResponse.json(
+      { id: created.id, course: created },
+      { status: 201 }
+    );
+  } catch (err) {
+    return NextResponse.json(
+      { error: "Failed to create course" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const body = await req.json();
+    const { id, updates } = body;
+    if (!id) {
+      return NextResponse.json({ error: "Missing course id" }, { status: 400 });
+    }
+
+    // Prevent updating relation fields directly (sections/enrollments).
+    // Persist nested UI data (sections, assignments, settings) inside the
+    // `curriculum` JSON column so the wizard can save progress without
+    // requiring complex nested writes.
+    const { sections, assignments, settings, curriculum, ...rest } =
+      updates || {};
+
+    const curriculumPayload = curriculum ?? {
+      ...(sections ? { sections } : {}),
+      ...(assignments ? { assignments } : {}),
+      ...(settings ? { settings } : {}),
+    };
+
+    const dataToUpdate: any = { ...rest };
+    if (Object.keys(curriculumPayload).length > 0) {
+      dataToUpdate.curriculum = curriculumPayload;
+    }
+
+    const updated = await prisma.course.update({
+      where: { id },
+      data: dataToUpdate,
+    });
+
+    return NextResponse.json({ course: updated });
+  } catch (err) {
+    return NextResponse.json(
+      { error: "Failed to update course" },
+      { status: 500 }
+    );
+  }
+}

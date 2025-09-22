@@ -3,7 +3,9 @@ import { nanoid } from "nanoid";
 
 export const useCourseStore = create<
   CourseBuilderState & {
+    courseId?: string | null;
     setInfo: (info: Partial<CourseInfo>) => void;
+    setCourseId: (id: string) => void;
     addSection: (title: string) => void;
     updateSection: (id: string, updates: Partial<SectionDraft>) => void;
     deleteSection: (id: string) => void;
@@ -18,8 +20,10 @@ export const useCourseStore = create<
 
     updateSettings: (updates: Partial<CourseSettings>) => void;
     reset: () => void;
+    setSections: (sections: SectionDraft[]) => void;
   }
 >((set) => ({
+  courseId: null,
   info: {
     title: "",
     slug: "",
@@ -40,6 +44,10 @@ export const useCourseStore = create<
     set((state) => ({
       info: { ...state.info, ...info },
     })),
+
+  setCourseId: (id) => set({ courseId: id }),
+
+  setSections: (sections) => set({ sections }),
 
   addSection: (title) =>
     set((state) => ({
