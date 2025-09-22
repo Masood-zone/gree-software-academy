@@ -49,7 +49,7 @@ export function LoginForm({
         return;
       }
 
-      toast.success("Login successful!");
+      toast.success("Login successful! Redirecting...");
       router.push("/");
     } catch (err: unknown) {
       const msg =
