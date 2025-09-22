@@ -35,6 +35,40 @@ export default function CourseInfoForm({ onNext }: Props) {
     setInfo(data);
 
     try {
+      // If an image file was selected, upload to Cloudinary first
+      const fileInput = (
+        document.getElementById("course-image") as HTMLInputElement | null
+      )?.files?.[0];
+      if (fileInput) {
+        try {
+          const sigRes = await fetch(`/api/uploads/cloudinary-signature`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ folder: "courses" }),
+          });
+          const sigJson = await sigRes.json();
+          if (sigRes.ok) {
+            const formData = new FormData();
+            formData.append("file", fileInput);
+            formData.append("api_key", sigJson.apiKey);
+            formData.append("timestamp", String(sigJson.timestamp));
+            formData.append("signature", sigJson.signature);
+            formData.append("folder", "courses");
+            const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+            const uploadRes = await fetch(
+              `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
+              { method: "POST", body: formData }
+            );
+            const uploadJson = await uploadRes.json();
+            if (uploadRes.ok && uploadJson.secure_url) {
+              data.image = uploadJson.secure_url;
+            }
+          }
+        } catch (uploadErr) {
+          console.error("Cloudinary upload failed", uploadErr);
+        }
+      }
+
       if (!courseId) {
         const res = await fetch(`/api/courses`, {
           method: "POST",
@@ -90,6 +124,15 @@ export default function CourseInfoForm({ onNext }: Props) {
       <div className="flex items-center gap-2">
         <input type="checkbox" {...register("isActive")} />
         <label className="text-sm">Active</label>
+      </div>
+      <div>
+        <label className="block text-sm font-medium">Cover Image</label>
+        <input
+          id="course-image"
+          type="file"
+          accept="image/*"
+          className="mt-1 block w-full"
+        />
       </div>
 
       <div className="flex justify-end">

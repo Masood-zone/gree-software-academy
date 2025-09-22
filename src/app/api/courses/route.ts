@@ -58,7 +58,6 @@ export async function POST(req: Request) {
       image,
       isActive,
       curriculum,
-      settings,
     } = body;
 
     const created = await prisma.course.create({
@@ -80,7 +79,8 @@ export async function POST(req: Request) {
       { id: created.id, course: created },
       { status: 201 }
     );
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "Failed to create course" },
       { status: 500 }
@@ -100,7 +100,7 @@ export async function PATCH(req: Request) {
     // Persist nested UI data (sections, assignments, settings) inside the
     // `curriculum` JSON column so the wizard can save progress without
     // requiring complex nested writes.
-    const { sections, assignments, settings, curriculum, ...rest } =
+    const { sections, assignments, curriculum, settings, ...rest } =
       updates || {};
 
     const curriculumPayload = curriculum ?? {
@@ -109,7 +109,7 @@ export async function PATCH(req: Request) {
       ...(settings ? { settings } : {}),
     };
 
-    const dataToUpdate: any = { ...rest };
+    const dataToUpdate: Record<string, unknown> = { ...rest };
     if (Object.keys(curriculumPayload).length > 0) {
       dataToUpdate.curriculum = curriculumPayload;
     }
@@ -120,7 +120,8 @@ export async function PATCH(req: Request) {
     });
 
     return NextResponse.json({ course: updated });
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "Failed to update course" },
       { status: 500 }

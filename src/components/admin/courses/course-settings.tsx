@@ -10,12 +10,17 @@ export default function CourseSettings({
   onNext?: () => void;
   onBack?: () => void;
 }) {
-  const { register, handleSubmit } = useForm({
-    defaultValues: useCourseStore.getState().settings,
+  type SettingsForm = {
+    depositPercent?: number;
+    installmentDuration?: number;
+    showInLibrary?: boolean;
+  };
+  const { register, handleSubmit } = useForm<SettingsForm>({
+    defaultValues: useCourseStore.getState().settings as SettingsForm,
   });
   const courseId = useCourseStore((s) => s.courseId);
 
-  async function onSubmit(data: any) {
+  async function onSubmit(data: SettingsForm) {
     try {
       if (!courseId) return;
       await fetch(`/api/courses`, {
@@ -24,8 +29,8 @@ export default function CourseSettings({
         body: JSON.stringify({ id: courseId, updates: { settings: data } }),
       });
       onNext?.();
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     }
   }
 

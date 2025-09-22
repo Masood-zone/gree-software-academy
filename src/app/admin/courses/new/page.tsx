@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import CreateCourseWizard from "@/components/admin/courses/create-course-wizard";
+import CreateCourseWizard from "../../../../components/admin/courses/create-course-wizard";
 
 export default function CreateCoursePageClient() {
   return (

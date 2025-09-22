@@ -1,12 +1,13 @@
 "use client";
 import React from "react";
 import { useCourseStore } from "@/store/course-store";
+import { toast } from "react-toastify";
 
 export default function CoursePreview({ onBack }: { onBack?: () => void }) {
   const info = useCourseStore((s) => s.info);
   const sections = useCourseStore((s) => s.sections);
   const settings = useCourseStore((s) => s.settings);
-  const courseId = useCourseStore((s) => s.courseId);
+  // courseId intentionally not used in preview
 
   return (
     <div>
@@ -37,7 +38,30 @@ export default function CoursePreview({ onBack }: { onBack?: () => void }) {
         <button onClick={onBack} className="px-4 py-2 rounded bg-gray-100">
           Back
         </button>
-        <button className="px-4 py-2 rounded bg-green-600 text-white">
+        <button
+          onClick={async () => {
+            if (!useCourseStore.getState().courseId) {
+              toast.error("Missing course id");
+              return;
+            }
+            try {
+              const res = await fetch(`/api/courses/publish`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  id: useCourseStore.getState().courseId,
+                }),
+              });
+              const json = await res.json();
+              if (!res.ok) throw new Error(json?.error || "Publish failed");
+              toast.success("Course published successfully");
+            } catch (error) {
+              console.error(error);
+              toast.error("Failed to publish course");
+            }
+          }}
+          className="px-4 py-2 rounded bg-green-600 text-white"
+        >
           Publish
         </button>
       </div>

@@ -3,14 +3,10 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { assignmentSchema } from "@/lib/schemas/assignments";
 import { useCourseStore } from "@/store/course-store";
 
-const schema = z.object({
-  title: z.string().min(3, "Title is required"),
-  instructions: z.string().optional(),
-  link: z.string().url().optional(),
-});
-
+const schema = assignmentSchema;
 type FormData = z.infer<typeof schema>;
 
 export default function AssignmentsForm({
@@ -42,14 +38,36 @@ export default function AssignmentsForm({
   }
 
   async function uploadFile(file: File) {
+    // Try S3 presign flow first
+    try {
+      const res = await fetch(`/api/uploads/s3-presign`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: file.name, contentType: file.type }),
+      });
+      const json = await res.json();
+      if (res.ok && json?.url) {
+        // Upload via PUT to the presigned URL
+        await fetch(json.url, {
+          method: json.method || "PUT",
+          headers: { "Content-Type": file.type },
+          body: file,
+        });
+        return json.url as string;
+      }
+    } catch (e) {
+      console.warn("S3 presign failed, falling back to base64 upload", e);
+    }
+
+    // Fallback to legacy base64 upload endpoint
     const base64 = await readFileAsBase64(file);
-    const res = await fetch(`/api/uploads`, {
+    const fallback = await fetch(`/api/uploads`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: file.name, data: base64 }),
     });
-    const json = await res.json();
-    return json.url as string;
+    const fallbackJson = await fallback.json();
+    return fallbackJson.url as string;
   }
 
   async function onSubmit(values: FormData) {

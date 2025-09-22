@@ -11,7 +11,8 @@ export async function POST(req: Request) {
     }
 
     const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+    if (!fs.existsSync(uploadsDir))
+      fs.mkdirSync(uploadsDir, { recursive: true });
 
     const buffer = Buffer.from(data, "base64");
     const fileName = `${Date.now()}-${name.replace(/[^a-z0-9.\-_]/gi, "-")}`;
@@ -20,7 +21,8 @@ export async function POST(req: Request) {
 
     const url = `/uploads/${fileName}`;
     return NextResponse.json({ url });
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
