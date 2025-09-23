@@ -24,6 +24,3 @@ api.interceptors.response.use(
     return Promise.reject(Object.assign(new Error(message), { status }));
   }
 );
-
-export const BASEURL =
-  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
